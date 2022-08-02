@@ -53,7 +53,7 @@ def get_automation_runas_credential(runas_connection):
 
     # Authenticate with service principal certificate
     resource = "https://management.core.windows.net/"
-    authority_url = ("https://login.microsoftonline.com/" + tenant_id)
+    authority_url = f"https://login.microsoftonline.com/{tenant_id}"
     context = adal.AuthenticationContext(authority_url)
     return azure_active_directory.AdalAuthentication(
         lambda: context.acquire_token_with_client_certificate(
@@ -118,7 +118,7 @@ elif resource_group_name is not None and vm_name is None:
     # Get specific resource group
     resource_group = resource_client.resource_groups.get(resource_group_name)
     groups.append(resource_group)
-elif resource_group_name is not None and vm_name is not None:
+elif resource_group_name is not None:
     # Specific resource group and VM name passed in so start the VM
     vm_detail = compute_client.virtual_machines.get(resource_group_name, vm_name, expand='instanceView')
     if vm_detail.instance_view.statuses[1].code == 'PowerState/deallocated':
@@ -144,4 +144,4 @@ for group in groups:
 # Wait for all threads to complete
 for thread in vm_threads_list:
     thread.join()
-print "Finished starting all VMs"
+resource_group_name = None

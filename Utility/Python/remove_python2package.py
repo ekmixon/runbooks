@@ -43,7 +43,7 @@ def get_automation_runas_token():
 
     # Authenticate with service principal certificate
     resource = "https://management.core.windows.net/"
-    authority_url = ("https://login.microsoftonline.com/" + tenant_id)
+    authority_url = f"https://login.microsoftonline.com/{tenant_id}"
     context = adal.AuthenticationContext(authority_url)
     azure_credential = context.acquire_token_with_client_certificate(
         resource,
@@ -72,12 +72,15 @@ def remove_package(packagename):
 
 def get_all_packages():
     # get all automation packages in the account. Returns dictionary of packages
-    request_url = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Automation/automationAccounts/%s/python2Packages?api-version=2018-06-30" \
-                  % (subscription_id, resource_group, automation_account)
+    request_url = f"https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Automation/automationAccounts/{automation_account}/python2Packages?api-version=2018-06-30"
 
-    headers = {'Content-Type' : 'application/json', 'Authorization' : "Bearer %s" % token}
-    package_info = requests.get(request_url, headers=headers).json()
-    return package_info 
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f"Bearer {token}",
+    }
+
+    return requests.get(request_url, headers=headers).json() 
 
 if __name__ == '__main__':
     if len(sys.argv) < 9:

@@ -62,7 +62,7 @@ def get_automation_runas_token(runas_connection):
 
     # Authenticate with service principal certificate
     resource = "https://management.core.windows.net/"
-    authority_url = ("https://login.microsoftonline.com/" + tenant_id)
+    authority_url = f"https://login.microsoftonline.com/{tenant_id}"
     context = adal.AuthenticationContext(authority_url)
     azure_credential = context.acquire_token_with_client_certificate(
         resource,

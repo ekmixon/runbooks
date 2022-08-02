@@ -49,7 +49,7 @@ def get_automation_runas_credential(runas_connection):
 
     # Authenticate with service principal certificate
     resource = "https://management.core.windows.net/"
-    authority_url = ("https://login.microsoftonline.com/" + tenant_id)
+    authority_url = f"https://login.microsoftonline.com/{tenant_id}"
     context = adal.AuthenticationContext(authority_url)
     return azure_active_directory.AdalAuthentication(
         lambda: context.acquire_token_with_client_certificate(
@@ -73,9 +73,10 @@ def download_blob(blob_file, local_path):
     # Get diretory / file from the blob name
     directoryname, filename = os.path.split(blob_file.name)
     # If there is a direcotry, create it on the local file system if it doesn't exist
-    if directoryname:
-        if not os.path.exists(os.path.join(local_path, directoryname)):
-            os.makedirs((os.path.join(local_path, directoryname)))
+    if directoryname and not os.path.exists(
+        os.path.join(local_path, directoryname)
+    ):
+        os.makedirs((os.path.join(local_path, directoryname)))
     # Download the blob if it is different than local file
     if os.path.exists(os.path.join(local_path, blob_file.name)):
         object_md5 = get_md5_checksum(os.path.join(local_path, blob_file.name))

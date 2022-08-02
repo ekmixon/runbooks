@@ -54,7 +54,7 @@ def get_automation_runas_token():
 
     # Authenticate with service principal certificate
     resource = "https://management.core.windows.net/"
-    authority_url = ("https://login.microsoftonline.com/" + tenant_id)
+    authority_url = f"https://login.microsoftonline.com/{tenant_id}"
     context = adal.AuthenticationContext(authority_url)
     azure_credential = context.acquire_token_with_client_certificate(
         resource,
@@ -67,14 +67,14 @@ def get_automation_runas_token():
 
 def get_packagename_from_filename(packagefilename):
     match = re.match(FILENAME_PATTERN, packagefilename)
-    return match.group(0)
+    return match[0]
 
 def resolve_download_url(packagename, packagefilename):
-    response = requests.get("%s/%s" % (PYPI_ENDPOINT, packagename))
+    response = requests.get(f"{PYPI_ENDPOINT}/{packagename}")
     download_uri_regex = "<a href=\"([^\"]+)\".*>%s<" % packagefilename
     download_uri_match = re.search(download_uri_regex, response.content)
-    print "detected download uri %s for %s" % (download_uri_match.group(1), packagename)
-    return download_uri_match.group(1)
+    response = requests.get("%s/%s" % (PYPI_ENDPOINT, packagename))
+    return download_uri_match[1]
 
 def send_webservice_import_module_request(packagename, download_uri_for_file):
     request_url = "https://management.azure.com/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Automation/automationAccounts/%s/python2Packages/%s?api-version=2018-06-30" \

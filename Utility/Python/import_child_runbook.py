@@ -38,7 +38,7 @@ def download_file(resource_group, automation_account, runbook_name, runbook_type
 
         # Authenticate with service principal certificate
         resource = "https://management.core.windows.net/"
-        authority_url = ("https://login.microsoftonline.com/" + tenant_id)
+        authority_url = f"https://login.microsoftonline.com/{tenant_id}"
         context = adal.AuthenticationContext(authority_url)
         azure_credential = context.acquire_token_with_client_certificate(
             resource,
@@ -57,14 +57,30 @@ def download_file(resource_group, automation_account, runbook_name, runbook_type
     subscription_id = str(automation_runas_connection["SubscriptionId"])
 
     # Set up URI to create a new automation job
-    uri = ("https://management.azure.com/subscriptions/" + subscription_id
-           + "/resourceGroups/" + resource_group
-           + "/providers/Microsoft.Automation/automationAccounts/" + automation_account
-           + "/runbooks/" + runbook_name + "/content?api-version=2015-10-31")
+    uri = (
+        (
+            (
+                (
+                    (
+                        (
+                            f"https://management.azure.com/subscriptions/{subscription_id}"
+                            + "/resourceGroups/"
+                        )
+                        + resource_group
+                    )
+                    + "/providers/Microsoft.Automation/automationAccounts/"
+                )
+                + automation_account
+            )
+            + "/runbooks/"
+        )
+        + runbook_name
+    ) + "/content?api-version=2015-10-31"
+
 
 
     # Make request to create new automation job
-    headers = {"Authorization": 'Bearer ' + access_token}
+    headers = {"Authorization": f'Bearer {access_token}'}
     result = requests.get(uri, headers=headers)
 
     runbookfile = os.path.join(sys.path[0], runbook_name) + runbook_type
